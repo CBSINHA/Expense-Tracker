@@ -3,6 +3,7 @@ package com.shashank.expense_tracker.service;
 import com.shashank.expense_tracker.entity.Expense;
 import com.shashank.expense_tracker.repository.ExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,8 +21,29 @@ public List<Expense> getAllExpenses(){
     return repository.findAll();
 }
 
+public Expense getExpensebyId(Long id){
+    return repository.findById(id).orElseThrow(()->new RuntimeException(("Expense not found")));
+}
+
+public List<Expense> getExpensesByCategory(String category) {
+    return repository.findByCategoryIgnoreCase(category);
+}
+
+public List<Expense> getSortedExpenses(String field){
+    return repository.findAll(Sort.by(Sort.Direction.DESC,field));
+}
+
 public boolean deleteExpense(Long id){
     if(repository.existsById(id)){repository.deleteById(id);return true;}
     return false;
+}
+
+public Expense updateExpense(long id, Expense expense){
+    Expense oldExpense=repository.findById(id).orElseThrow(()->new RuntimeException(("Expense not found")));
+    oldExpense.setAmount(expense.getAmount());
+    oldExpense.setDate(expense.getDate());
+    oldExpense.setCategory(expense.getCategory());
+    oldExpense.setTitle(expense.getTitle());
+    return repository.save(oldExpense);
 }
 }
