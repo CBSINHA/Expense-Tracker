@@ -3,6 +3,9 @@ package com.shashank.expense_tracker.service;
 import com.shashank.expense_tracker.entity.Expense;
 import com.shashank.expense_tracker.repository.ExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -46,4 +49,15 @@ public Expense updateExpense(long id, Expense expense){
     oldExpense.setTitle(expense.getTitle());
     return repository.save(oldExpense);
 }
+
+public Page<Expense> getPaginatedExpense(int page,int length){
+    Pageable pageable= PageRequest.of(page, length);
+    return repository.findAll(pageable);
+}
+
+public List<Expense> findByTitle(String keyword){
+    return repository.findByTitleContainingIgnoreCase(keyword);
+}
+
+
 }

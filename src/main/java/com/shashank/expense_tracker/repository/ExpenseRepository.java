@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ExpenseRepository extends JpaRepository<Expense,Long> {
     List<Expense> findByCategoryIgnoreCase(String category);
+    List<Expense> findByTitleContainingIgnoreCase(String keyword);
 }

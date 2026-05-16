@@ -1,10 +1,12 @@
 package com.shashank.expense_tracker.controller;
 
 
+import com.shashank.expense_tracker.dto.ExpenseDTO;
 import com.shashank.expense_tracker.entity.Expense;
 import com.shashank.expense_tracker.service.ExpenseService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,33 +20,35 @@ public class ExpenseController {
     private ExpenseService service;
 
     @PostMapping
-    public ResponseEntity<Expense> addExpense(@Valid @RequestBody Expense expense){
+    public ResponseEntity<ExpenseDTO> addExpense(@Valid @RequestBody ExpenseDTO dto){
+        Expense expense = convertToEntity(dto);
         Expense addedExpense= service.addExpense(expense);
-        return new ResponseEntity<>(addedExpense, HttpStatus.CREATED);
+        ExpenseDTO responseDto=convertToDTO(addedExpense);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<Expense>> getAllExpenses(){
-        return ResponseEntity.ok(service.getAllExpenses());
+    public ResponseEntity<List<ExpenseDTO>> getAllExpenses(){
+        return ResponseEntity.ok(service.getAllExpenses().stream().map(this::convertToDTO).toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Expense> getExpenseById(@PathVariable Long id){
-        return ResponseEntity.ok(service.getExpensebyId(id));
+    public ResponseEntity<ExpenseDTO> getExpenseById(@PathVariable Long id){
+        return ResponseEntity.ok(convertToDTO(service.getExpensebyId(id)));
     }
 
     @GetMapping("/category/{category}")
-    public ResponseEntity<List<Expense>> getExpensesByCategory(
+    public ResponseEntity<List<ExpenseDTO>> getExpensesByCategory(
             @PathVariable String category) {
 
         return ResponseEntity.ok(
-                service.getExpensesByCategory(category)
+                service.getExpensesByCategory(category).stream().map(this::convertToDTO).toList()
         );
     }
 
     @GetMapping("/sorted/{field}")
-    public ResponseEntity<List<Expense>> getSortedExpenses(@PathVariable String field){
-        return ResponseEntity.ok(service.getSortedExpenses(field));
+    public ResponseEntity<List<ExpenseDTO>> getSortedExpenses(@PathVariable String field){
+        return ResponseEntity.ok(service.getSortedExpenses(field).stream().map(this::convertToDTO).toList());
     }
 
     @DeleteMapping("/{id}")
@@ -55,7 +59,49 @@ public class ExpenseController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Expense> updateExpense(@PathVariable Long id, @RequestBody Expense expense){
-        return ResponseEntity.ok(service.updateExpense(id,expense));
+    public ResponseEntity<ExpenseDTO> updateExpense(@PathVariable Long id,@Valid @RequestBody ExpenseDTO dto){
+        Expense expense=convertToEntity(dto);
+        return ResponseEntity.ok(convertToDTO(service.updateExpense(id,expense)));
+    }
+
+    @GetMapping("/paginated")
+    public ResponseEntity<Page<ExpenseDTO>> getPaginatedResponse(@RequestParam int page, @RequestParam int size){
+        Page<ExpenseDTO> dtoPage=service.getPaginatedExpense(page, size).map(this::convertToDTO);
+        return ResponseEntity.ok(dtoPage);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ExpenseDTO>> searchExpenses(@RequestParam String keyword){
+        return ResponseEntity.ok(service.findByTitle(keyword).stream().map(this::convertToDTO).toList());
+    }
+
+
+
+
+    private Expense convertToEntity(ExpenseDTO dto) {
+
+        Expense expense = new Expense();
+
+        expense.setId(dto.getId());
+        expense.setTitle(dto.getTitle());
+        expense.setAmount(dto.getAmount());
+        expense.setCategory(dto.getCategory());
+        expense.setDate(dto.getDate());
+
+        return expense;
+    }
+
+
+    private ExpenseDTO convertToDTO(Expense expense) {
+
+        ExpenseDTO dto = new ExpenseDTO();
+
+        dto.setId(expense.getId());
+        dto.setTitle(expense.getTitle());
+        dto.setAmount(expense.getAmount());
+        dto.setCategory(expense.getCategory());
+        dto.setDate(expense.getDate());
+
+        return dto;
     }
 }
