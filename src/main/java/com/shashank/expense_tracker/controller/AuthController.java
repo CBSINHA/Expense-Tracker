@@ -1,6 +1,8 @@
 package com.shashank.expense_tracker.controller;
 
 
+import com.shashank.expense_tracker.dto.LoginRequestDTO;
+import com.shashank.expense_tracker.dto.LoginResponseDTO;
 import com.shashank.expense_tracker.dto.RegisterRequestDTO;
 import com.shashank.expense_tracker.dto.UserResponseDTO;
 import com.shashank.expense_tracker.entity.User;
@@ -26,5 +28,11 @@ public class AuthController {
         response.setUsername(savedUser.getUsername());
         response.setEmail(savedUser.getEmail());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDTO> loginUser(@RequestBody @Valid LoginRequestDTO dto){
+        String token= service.loginUser(dto);
+        return ResponseEntity.ok(new LoginResponseDTO(token));
     }
 }

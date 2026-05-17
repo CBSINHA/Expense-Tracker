@@ -1,8 +1,11 @@
 package com.shashank.expense_tracker.service;
 
+import com.shashank.expense_tracker.dto.LoginRequestDTO;
 import com.shashank.expense_tracker.dto.RegisterRequestDTO;
 import com.shashank.expense_tracker.entity.User;
+import com.shashank.expense_tracker.exception.InvalidCredentialsException;
 import com.shashank.expense_tracker.repository.UserRepository;
+import com.shashank.expense_tracker.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,6 +15,9 @@ public class UserService {
 
     @Autowired
     private UserRepository repository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -24,5 +30,14 @@ public class UserService {
         user.setUsername(dto.getUsername());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         return repository.save(user);
+    }
+
+
+
+    public String loginUser(LoginRequestDTO dto){
+        User user=repository.findByEmail(dto.getLogin()).orElseGet(()->repository.findByUsername(dto.getLogin()).orElseThrow(()->new InvalidCredentialsException("Invalid Username/Email")));
+        boolean passMatches=passwordEncoder.matches(dto.getPassword(), user.getPassword());
+        if(!passMatches)throw new InvalidCredentialsException("Invalid password entered");
+        return jwtUtil.tokenGenerate(user.getUsername());
     }
 }
