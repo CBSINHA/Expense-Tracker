@@ -1,6 +1,7 @@
 package com.shashank.expense_tracker.service;
 
 import com.shashank.expense_tracker.entity.Expense;
+import com.shashank.expense_tracker.entity.User;
 import com.shashank.expense_tracker.repository.ExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -59,5 +60,8 @@ public List<Expense> findByTitle(String keyword){
     return repository.findByTitleContainingIgnoreCase(keyword);
 }
 
+public List<Expense>getUserExpenses(User user){
+    return repository.findByUser(user);
+}
 
 }

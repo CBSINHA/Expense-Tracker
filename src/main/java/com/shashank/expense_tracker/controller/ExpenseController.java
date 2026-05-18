@@ -3,12 +3,15 @@ package com.shashank.expense_tracker.controller;
 
 import com.shashank.expense_tracker.dto.ExpenseDTO;
 import com.shashank.expense_tracker.entity.Expense;
+import com.shashank.expense_tracker.entity.User;
 import com.shashank.expense_tracker.service.ExpenseService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +25,9 @@ public class ExpenseController {
     @PostMapping
     public ResponseEntity<ExpenseDTO> addExpense(@Valid @RequestBody ExpenseDTO dto){
         Expense expense = convertToEntity(dto);
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        User user=(User)authentication.getPrincipal();
+        expense.setUser(user);
         Expense addedExpense= service.addExpense(expense);
         ExpenseDTO responseDto=convertToDTO(addedExpense);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
@@ -29,7 +35,9 @@ public class ExpenseController {
 
     @GetMapping
     public ResponseEntity<List<ExpenseDTO>> getAllExpenses(){
-        return ResponseEntity.ok(service.getAllExpenses().stream().map(this::convertToDTO).toList());
+        Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
+        User user=(User)authentication.getPrincipal();
+        return ResponseEntity.ok(service.getUserExpenses(user).stream().map(this::convertToDTO).toList());
     }
 
     @GetMapping("/{id}")
