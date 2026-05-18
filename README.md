@@ -137,6 +137,17 @@ Authorization: Bearer YOUR_JWT_TOKEN
 
 ---
 
+
+# Live Demo
+
+**API Base URL:**```
+ https://expense-tracker-ojay.onrender.com```
+
+**Swagger Documentation:**
+```https://expense-tracker-ojay.onrender.com/swagger-ui/index.html```
+
+---
+
 # Future Improvements
 
 * Frontend Upgrade
