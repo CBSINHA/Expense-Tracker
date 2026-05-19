@@ -1,28 +1,28 @@
-# Secure Full-Stack Expense Tracker
+# Secure Multi-User Expense Tracker API
 
-A production-style full-stack expense tracking application built using Spring Boot, Spring Security, JWT Authentication, PostgreSQL, React, and Tailwind CSS.
+A production-style backend expense tracking application built using Spring Boot, Spring Security, JWT Authentication, and PostgreSQL.
 
-This project demonstrates secure REST API development with authentication, authorization, pagination, filtering, searching, and multi-user data isolation, along with a clean frontend interface integrated with protected backend APIs.
+This project demonstrates secure REST API development with authentication, authorization, pagination, filtering, searching, sorting, and multi-user resource isolation.
 
 > **Note:**
 > The backend is deployed on Render's free tier.
-> If the application has been inactive for some time, the first request may take around 30–60 seconds while the backend server wakes up.
+> If the API has been inactive for some time, the first request may take around 30–60 seconds while the server wakes up.
 
 ---
 
-# Live Demo
+# Live API
 
-## Frontend Application
-
-https://expense-tracker-frontend-brown-xi.vercel.app/
-
-## Backend API
+## Backend Base URL
 
 https://expense-tracker-ojay.onrender.com
 
 ## Swagger Documentation
 
 https://expense-tracker-ojay.onrender.com/swagger-ui/index.html
+
+## Frontend Application
+
+https://expense-tracker-frontend-brown-xi.vercel.app/
 
 ---
 
@@ -31,49 +31,42 @@ https://expense-tracker-ojay.onrender.com/swagger-ui/index.html
 ## Authentication & Security
 
 * User Registration
+* Optional Email Registration
 * User Login
 * JWT Authentication
 * BCrypt Password Hashing
-* Protected Routes using Spring Security
 * Stateless Authentication
-* Multi-User Data Isolation
+* Protected Routes using Spring Security
+* Secure Multi-User Data Isolation
+* Authorization-based Resource Ownership Validation
 
 ## Expense Management
 
 * Create Expense
+* Read Expenses
 * Update Expense
 * Delete Expense
-* Get All User Expenses
 * Search Expenses
 * Filter Expenses by Category
 * Sort Expenses
 * Pagination Support
-
-## Frontend Features
-
-* Secure Login & Registration UI
-* Protected Dashboard Route
-* JWT Token Storage
-* Expense Creation & Deletion
-* Total Expense Calculation
-* Toast Notifications
-* Responsive Dark-Themed UI
+* Show All Expenses
+* Custom Expense Categories
 
 ## Backend Engineering
 
 * Layered Architecture
 * DTO Pattern
 * Global Exception Handling
-* Validation using Jakarta Validation
+* Jakarta Validation
 * RESTful API Design
-* PostgreSQL Cloud Database (Neon)
 * Swagger/OpenAPI Documentation
+* PostgreSQL Cloud Database
+* Secure User-Specific Query Handling
 
 ---
 
 # Tech Stack
-
-## Backend
 
 * Java
 * Spring Boot
@@ -85,44 +78,30 @@ https://expense-tracker-ojay.onrender.com/swagger-ui/index.html
 * Swagger / OpenAPI
 * Neon Database
 
-## Frontend
-
-* React
-* Vite
-* Tailwind CSS
-* Axios
-* React Router
-* React Hot Toast
-
-## Deployment
-
-* Render (Backend)
-* Vercel (Frontend)
-
 ---
 
 # Architecture
 
-```text id="1w5umr"
-React Frontend
+```text
+Controller Layer
        ↓
-REST APIs
+Service Layer
        ↓
-Spring Boot Backend
+Repository Layer
        ↓
 PostgreSQL Database
 ```
 
-## Authentication Flow
+---
 
-```text id="buzmho"
+# Authentication Flow
+
+```text
 User Login
      ↓
 JWT Token Generated
      ↓
-Frontend Stores Token
-     ↓
-Token Sent in Authorization Header
+Client Sends JWT Token
      ↓
 JWT Filter Validates Token
      ↓
@@ -131,17 +110,44 @@ Spring Security Authenticates Request
 
 ---
 
+# API Endpoints
+
+## Authentication APIs
+
+| Method | Endpoint         | Description   |
+| ------ | ---------------- | ------------- |
+| POST   | `/auth/register` | Register User |
+| POST   | `/auth/login`    | Login User    |
+
+---
+
+## Expense APIs
+
+| Method | Endpoint                          | Description           |
+| ------ | --------------------------------- | --------------------- |
+| GET    | `/expenses`                       | Get All User Expenses |
+| GET    | `/expenses/{id}`                  | Get Expense By ID     |
+| POST   | `/expenses`                       | Add Expense           |
+| PUT    | `/expenses/{id}`                  | Update Expense        |
+| DELETE | `/expenses/{id}`                  | Delete Expense        |
+| GET    | `/expenses/search?keyword=`       | Search Expenses       |
+| GET    | `/expenses/category/{category}`   | Filter By Category    |
+| GET    | `/expenses/sorted/{field}`        | Sort Expenses         |
+| GET    | `/expenses/paginated?page=&size=` | Paginated Expenses    |
+
+---
+
 # API Documentation
 
 Swagger UI:
 
-```text id="nrxb5u"
+```text
 http://localhost:8080/swagger-ui/index.html
 ```
 
 Production Swagger URL:
 
-```text id="6lcr0q"
+```text
 https://expense-tracker-ojay.onrender.com/swagger-ui/index.html
 ```
 
@@ -149,25 +155,19 @@ https://expense-tracker-ojay.onrender.com/swagger-ui/index.html
 
 # Setup Instructions
 
-## Clone Backend Repository
+## Clone Repository
 
-```bash id="3zw5u6"
+```bash
 git clone https://github.com/CBSINHA/Expense-Tracker
-```
-
-## Clone Frontend Repository
-
-```bash id="olpbhw"
-git clone https://github.com/CBSINHA/expense-tracker-frontend
 ```
 
 ---
 
-# Backend Configuration
+# Configure Environment Variables
 
 Create `application.properties` (`example-application.properties` already provided under `src/main/resources/`):
 
-```properties id="e63nvt"
+```properties
 spring.application.name=expense-tracker
 
 spring.datasource.url=YOUR_DB_URL
@@ -185,40 +185,41 @@ jwt.expiration=36000000
 
 ---
 
-# Run Backend
+# Run Application
 
-```bash id="jlwmg1"
+```bash
 mvn spring-boot:run
-```
-
----
-
-# Run Frontend
-
-```bash id="jlwmg2"
-npm install
-npm run dev
 ```
 
 ---
 
 # Example Authorization Header
 
-```http id="jlwmg3"
+```http
 Authorization: Bearer YOUR_JWT_TOKEN
 ```
 
 ---
 
+# Security Improvements Implemented
+
+* User-specific expense isolation
+* Secure filtering/searching/sorting
+* Ownership validation for update/delete operations
+* Stateless JWT-based authentication
+* Protected REST endpoints using Spring Security
+
+---
+
 # Key Learnings
 
-* Implemented JWT-based stateless authentication using Spring Security.
-* Built protected REST APIs with secure user-specific expense access.
-* Integrated React frontend with secured backend APIs using Axios interceptors.
-* Managed CORS configuration for frontend-backend communication.
+* Implemented JWT authentication using Spring Security.
+* Built secure multi-user REST APIs with resource ownership validation.
 * Designed layered backend architecture using DTOs and service-repository pattern.
-* Implemented validation and global exception handling for robust API responses.
-* Deployed a full-stack application using Render and Vercel.
+* Implemented searching, filtering, sorting, pagination, and CRUD operations.
+* Integrated PostgreSQL cloud database using Neon.
+* Implemented validation and global exception handling for robust APIs.
+* Deployed production-style backend using Render.
 
 ---
 
@@ -228,6 +229,7 @@ Authorization: Bearer YOUR_JWT_TOKEN
 * Expense Analytics Dashboard
 * Budget Management
 * Export Features
+* Unit & Integration Testing
 
 ---
 
