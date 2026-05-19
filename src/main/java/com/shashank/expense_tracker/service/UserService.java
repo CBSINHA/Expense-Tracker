@@ -23,7 +23,8 @@ public class UserService {
     private BCryptPasswordEncoder passwordEncoder;
 
     public User registerUser(RegisterRequestDTO dto){
-        if(repository.existsByEmail(dto.getEmail()))throw new RuntimeException("Email already exists!");
+        if(dto.getEmail() != null && dto.getEmail().isBlank()) dto.setEmail(null);
+        if(dto.getEmail()!=null && repository.existsByEmail(dto.getEmail()))throw new RuntimeException("Email already exists!");
         if(repository.existsByUsername(dto.getUsername()))throw new RuntimeException("Username already exists!");
         User user=new User();
         user.setEmail(dto.getEmail());
