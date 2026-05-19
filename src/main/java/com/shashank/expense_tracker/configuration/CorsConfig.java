@@ -19,7 +19,7 @@ public class CorsConfig {
                 registry.addMapping("/**")
 
                         .allowedOrigins(
-                                "http://localhost:5173"
+                                "http://localhost:5173", "https://expense-tracker-frontend-brown-xi.vercel.app/"
                         )
 
                         .allowedMethods("*")
