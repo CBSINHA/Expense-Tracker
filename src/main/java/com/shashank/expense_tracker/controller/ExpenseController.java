@@ -28,6 +28,19 @@ public class ExpenseController {
     @Autowired
     private ExpenseService service;
 
+    // helper method
+
+    private User getAuthenticatedUser() {
+
+        Authentication authentication =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication();
+
+        return (User)
+                authentication.getPrincipal();
+    }
+
     // add expense
 
     @PostMapping
@@ -41,15 +54,8 @@ public class ExpenseController {
         Expense expense =
                 convertToEntity(dto);
 
-        Authentication authentication =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication();
-
         User user =
-                (User)
-                        authentication
-                                .getPrincipal();
+                getAuthenticatedUser();
 
         expense.setUser(user);
 
@@ -73,15 +79,8 @@ public class ExpenseController {
     public ResponseEntity<List<ExpenseDTO>>
     getAllExpenses() {
 
-        Authentication authentication =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication();
-
         User user =
-                (User)
-                        authentication
-                                .getPrincipal();
+                getAuthenticatedUser();
 
         return ResponseEntity.ok(
 
@@ -101,10 +100,17 @@ public class ExpenseController {
             @PathVariable Long id
     ) {
 
+        User user =
+                getAuthenticatedUser();
+
         return ResponseEntity.ok(
 
                 convertToDTO(
-                        service.getExpensebyId(id)
+
+                        service.getExpensebyId(
+                                id,
+                                user
+                        )
                 )
         );
     }
@@ -117,15 +123,8 @@ public class ExpenseController {
             @PathVariable String category
     ) {
 
-        Authentication authentication =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication();
-
         User user =
-                (User)
-                        authentication
-                                .getPrincipal();
+                getAuthenticatedUser();
 
         return ResponseEntity.ok(
 
@@ -148,15 +147,8 @@ public class ExpenseController {
             @PathVariable String field
     ) {
 
-        Authentication authentication =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication();
-
         User user =
-                (User)
-                        authentication
-                                .getPrincipal();
+                getAuthenticatedUser();
 
         return ResponseEntity.ok(
 
@@ -179,8 +171,14 @@ public class ExpenseController {
             @PathVariable Long id
     ) {
 
+        User user =
+                getAuthenticatedUser();
+
         boolean deleted =
-                service.deleteExpense(id);
+                service.deleteExpense(
+                        id,
+                        user
+                );
 
         if (deleted) {
 
@@ -206,6 +204,9 @@ public class ExpenseController {
             ExpenseDTO dto
     ) {
 
+        User user =
+                getAuthenticatedUser();
+
         Expense expense =
                 convertToEntity(dto);
 
@@ -215,7 +216,8 @@ public class ExpenseController {
 
                         service.updateExpense(
                                 id,
-                                expense
+                                expense,
+                                user
                         )
                 )
         );
@@ -232,15 +234,8 @@ public class ExpenseController {
             @RequestParam int size
     ) {
 
-        Authentication authentication =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication();
-
         User user =
-                (User)
-                        authentication
-                                .getPrincipal();
+                getAuthenticatedUser();
 
         Page<ExpenseDTO> dtoPage =
 
@@ -266,15 +261,8 @@ public class ExpenseController {
             @RequestParam String keyword
     ) {
 
-        Authentication authentication =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication();
-
         User user =
-                (User)
-                        authentication
-                                .getPrincipal();
+                getAuthenticatedUser();
 
         return ResponseEntity.ok(
 

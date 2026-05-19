@@ -38,17 +38,21 @@ public class ExpenseService {
 
 
     public Expense getExpensebyId(
-            Long id
+            Long id,
+            User user
     ) {
 
-        return repository.findById(id)
+        return repository
+                .findByIdAndUser(
+                        id,
+                        user
+                )
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Expense not found"
                         )
                 );
     }
-
 
     public List<Expense>
     getExpensesByCategory(
@@ -81,29 +85,39 @@ public class ExpenseService {
 
 
     public boolean deleteExpense(
-            Long id
+            Long id,
+            User user
     ) {
 
-        if (
-                repository.existsById(id)
-        ) {
+        Expense expense =
+                repository
+                        .findByIdAndUser(
+                                id,
+                                user
+                        )
+                        .orElse(null);
 
-            repository.deleteById(id);
+        if (expense == null) {
 
-            return true;
+            return false;
         }
 
-        return false;
-    }
+        repository.delete(expense);
 
+        return true;
+    }
 
     public Expense updateExpense(
             long id,
-            Expense expense
+            Expense expense,
+            User user
     ) {
 
         Expense oldExpense =
-                repository.findById(id)
+                repository.findByIdAndUser(
+                                id,
+                                user
+                        )
                         .orElseThrow(() ->
                                 new RuntimeException(
                                         "Expense not found"

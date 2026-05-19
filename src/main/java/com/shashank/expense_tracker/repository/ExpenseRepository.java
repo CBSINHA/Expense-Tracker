@@ -37,4 +37,14 @@ public interface ExpenseRepository
             User user,
             org.springframework.data.domain.Sort sort
     );
+    java.util.Optional<Expense>
+    findByIdAndUser(
+            Long id,
+            User user
+    );
+
+    boolean existsByIdAndUser(
+            Long id,
+            User user
+    );
 }
